@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @SpringBootApplication
 @RestController
 public class BackendApplication {
@@ -25,12 +27,12 @@ public class BackendApplication {
     }
 
     @GetMapping("/hello")
-    public String hello() {
-        return "Hello, World!";
+    public Map<String, String> hello() {
+        return Map.of("message", "Hello, World!");
     }
 
     @GetMapping("/sendTestEmail")
-    public String sendTestEmail() {
+    public Map<String, String> sendTestEmail() {
         Resend resend = new Resend(resendApiKey);
 
         CreateEmailOptions params = CreateEmailOptions.builder()
@@ -47,6 +49,6 @@ public class BackendApplication {
             e.printStackTrace();
         }
 
-        return "Test email sent!";
+        return Map.of("message", "Test email sent!");
     }
 }
