@@ -1,0 +1,8 @@
+/.idea
+
+/frontend/.idea
+
+/backend/.idea
+/backend/target
+
+*secret*
