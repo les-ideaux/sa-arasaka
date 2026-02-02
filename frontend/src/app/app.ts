@@ -3,10 +3,13 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('frontend');
+  protected readonly title = signal('Parking');
+
+  onButtonClick(){
+    console.log("I've been clicked!")
+  }
 }
