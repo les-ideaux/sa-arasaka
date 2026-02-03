@@ -1,4 +1,4 @@
-package fr.lesideaux.saarasaka.backend.data;
+package fr.lesideaux.saarasaka.backend.data.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -26,4 +26,3 @@ public class TestEntity {
         return value;
     }
 }
-
