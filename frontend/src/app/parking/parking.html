@@ -1,0 +1,9 @@
+<div class="rows">
+  @for (rows of parkingPlaces; track $index) {
+    <div class="row" [class.electric]="$index == 0 || $index == parkingPlaces.length-1">
+      @for (place of rows; track place) {
+        <button>{{ place }}</button>
+      }
+    </div>
+  }
+</div>
