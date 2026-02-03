@@ -1,13 +1,16 @@
 package fr.lesideaux.saarasaka.backend.config;
 
 import fr.lesideaux.saarasaka.backend.data.entity.ParkingSpaceEntity;
+import fr.lesideaux.saarasaka.backend.data.entity.ReservationEntity;
 import fr.lesideaux.saarasaka.backend.data.entity.TestEntity;
 import fr.lesideaux.saarasaka.backend.data.repository.ParkingSpaceRepository;
+import fr.lesideaux.saarasaka.backend.data.repository.ReservationRepository;
 import fr.lesideaux.saarasaka.backend.data.repository.TestRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Date;
 import java.util.List;
 
 @Configuration
@@ -38,6 +41,15 @@ public class DataLoader {
                         }
                     }
                 }
+            }
+        };
+    }
+
+    @Bean
+    CommandLineRunner loadReservations(ReservationRepository repository) {
+        return args -> {
+            if (repository.count() == 0) {
+                repository.save(new ReservationEntity(new Date(System.currentTimeMillis() + 3600_000), new Date(System.currentTimeMillis() + 7200_000), 1L));
             }
         };
     }

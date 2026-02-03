@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -17,7 +18,10 @@ public class ReservationEntity {
     @GeneratedValue
     private Long id;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
     private Long parkingSpaceId;
