@@ -1,9 +1,44 @@
-<div class="rows">
-  @for (rows of parkingPlaces; track $index) {
-    <div class="row" [class.electric]="$index == 0 || $index == parkingPlaces.length-1">
-      @for (place of rows; track place) {
-        <button>{{ place }}</button>
-      }
+<div class="parking-container">
+  <div class="legend">
+    <div class="legend-item">
+      <div class="spot-preview available"></div>
+      <span>Disponible</span>
     </div>
-  }
+    <div class="legend-item">
+      <div class="spot-preview reserved"></div>
+      <span>Réservée</span>
+    </div>
+    <div class="legend-item">
+      <div class="spot-preview confirmed"></div>
+      <span>Confirmée</span>
+    </div>
+    <div class="legend-item">
+      <div class="spot-preview electric">⚡</div>
+      <span>Borne électrique</span>
+    </div>
+  </div>
+
+  <div class="rows">
+    @for (row of parkingPlaces; track $index) {
+      <div class="row">
+        <div class="row-label">{{ row[0]?.row }}</div>
+        <div class="places">
+          @for (place of row; track place.id) {
+            <button
+              class="place"
+              [class.reserved]="place.reserved"
+              [class.confirmed]="place.confirmed"
+              [class.electric]="place.equippedWithElectricCharging"
+              [disabled]="place.reserved"
+              (click)="selectPlace(place)">
+              <span class="place-number">{{ place.number }}</span>
+              @if (place.equippedWithElectricCharging) {
+                <span class="electric-icon">⚡</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
 </div>
