@@ -1,5 +1,5 @@
 package fr.lesideaux.saarasaka.backend.data.entity;
-
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 public class UserEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)

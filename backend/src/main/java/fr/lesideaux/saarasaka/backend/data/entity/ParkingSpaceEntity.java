@@ -1,18 +1,20 @@
 package fr.lesideaux.saarasaka.backend.data.entity;
-
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "parking_spaces")
 public class ParkingSpaceEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String row;
@@ -32,12 +34,4 @@ public class ParkingSpaceEntity {
         this.isConfirmed = isConfirmed;
     }
 
-    public ParkingSpaceEntity(Long id, String row, String number, boolean isEquippedWithElectricCharging, boolean isReserved, boolean isConfirmed) {
-        this.id = id;
-        this.row = row;
-        this.number = number;
-        this.isEquippedWithElectricCharging = isEquippedWithElectricCharging;
-        this.isReserved = isReserved;
-        this.isConfirmed = isConfirmed;
-    }
 }
