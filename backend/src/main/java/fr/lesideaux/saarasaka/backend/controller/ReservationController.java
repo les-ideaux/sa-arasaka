@@ -1,58 +1,80 @@
 package fr.lesideaux.saarasaka.backend.controller;
 
-import fr.lesideaux.saarasaka.backend.data.entity.ReservationEntity;
-import fr.lesideaux.saarasaka.backend.data.repository.ReservationRepository;
+import fr.lesideaux.saarasaka.backend.data.entity.ParkingSpaceEntity;
+import fr.lesideaux.saarasaka.backend.dto.AvailabilityRequest;
+import fr.lesideaux.saarasaka.backend.dto.ReservationRequest;
+import fr.lesideaux.saarasaka.backend.dto.ReservationResponse;
+import fr.lesideaux.saarasaka.backend.service.ReservationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/reservation")
+@RequestMapping("/reservations")
 public class ReservationController {
 
-    private final ReservationRepository reservationRepository;
+    private final ReservationService reservationService;
 
-    public ReservationController(ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
-    }
-
-    @GetMapping
-    public List<ReservationEntity> getAllReservations() {
-        return reservationRepository.findAll();
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
     }
 
     @PostMapping
-    public ResponseEntity<?> createReservation(ReservationEntity reservation) {
-        if (reservation.getStartDate().after(reservation.getEndDate())) {
-            return ResponseEntity.badRequest().body("Invalid date range: Start date must be before end date.");
+    public ResponseEntity<?> createReservation(
+            @RequestBody ReservationRequest request,
+            @RequestHeader("X-User-Id") Long userId) {
+        try {
+            return ResponseEntity.ok(reservationService.createReservation(request, userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
         }
+    }
 
-        if (reservation.getParkingSpaceId() == null) {
-            return ResponseEntity.badRequest().body("Invalid reservation: Parking space ID must be provided.");
+    @PostMapping("/{id}/checkin")
+    public ResponseEntity<?> checkIn(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId) {
+        try {
+            return ResponseEntity.ok(reservationService.checkIn(id, userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
         }
+    }
 
-        if (reservation.getStartDate().before(new java.util.Date())) {
-            return ResponseEntity.badRequest().body("Invalid start date: Start date cannot be in the past.");
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<?> cancelReservation(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId) {
+        try {
+            return ResponseEntity.ok(reservationService.cancelReservation(id, userId));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
         }
+    }
 
-        if (reservation.getEndDate().before(new java.util.Date())) {
-            return ResponseEntity.badRequest().body("Invalid end date: End date cannot be in the past.");
-        }
+    @GetMapping("/my")
+    public List<ReservationResponse> getMyReservations(@RequestHeader("X-User-Id") Long userId) {
+        return reservationService.getUserReservations(userId);
+    }
 
-        List<ReservationEntity> conflictingReservations = reservationRepository.findByParkingSpaceIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                reservation.getParkingSpaceId(),
-                reservation.getStartDate(),
-                reservation.getEndDate()
+    @GetMapping
+    public List<ReservationResponse> getAllActiveReservations() {
+        return reservationService.getAllActiveReservations();
+    }
+
+    @GetMapping("/available-spaces")
+    public List<ParkingSpaceEntity> getAvailableSpaces(@ModelAttribute AvailabilityRequest request) {
+        return reservationService.getAvailableSpaces(
+                request.startDate(), request.endDate(), request.needsElectricCharging()
         );
-
-        if (!conflictingReservations.isEmpty()) {
-            return ResponseEntity.status(409).body("Conflict: The parking space is already reserved for the selected time period.");
-        }
-
-        return ResponseEntity.ok(reservationRepository.save(reservation));
     }
 }
