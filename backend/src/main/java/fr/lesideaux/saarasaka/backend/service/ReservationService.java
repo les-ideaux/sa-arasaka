@@ -155,6 +155,31 @@ public class ReservationService {
                 .toList();
     }
 
+    @Transactional
+    public ReservationResponse checkInBySpaceLabel(String spaceLabel, Long userId) {
+        if (spaceLabel == null || spaceLabel.length() < 2) {
+            throw new IllegalArgumentException("Label de place invalide");
+        }
+        String row = spaceLabel.substring(0, 1).toUpperCase();
+        String number = spaceLabel.substring(1);
+
+        ParkingSpaceEntity space = parkingSpaceRepository.findByRowAndNumber(row, number)
+                .orElseThrow(() -> new IllegalArgumentException("Place introuvable : " + spaceLabel));
+
+        LocalDate today = LocalDate.now();
+        List<ReservationEntity> candidates = reservationRepository.findConflictingReservations(
+                space.getId(), today, today
+        );
+
+        ReservationEntity reservation = candidates.stream()
+                .filter(r -> r.getUserId().equals(userId) && r.getStatus() == ReservationEntity.Status.PENDING)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Aucune réservation en attente pour aujourd'hui sur la place " + spaceLabel));
+
+        return checkIn(reservation.getId(), userId);
+    }
+
     public List<ParkingSpaceEntity> getAvailableSpaces(LocalDate startDate, LocalDate endDate, boolean needsElectric) {
         List<ParkingSpaceEntity> spaces = needsElectric
                 ? parkingSpaceRepository.findByIsEquippedWithElectricCharging(true)

@@ -1,0 +1,29 @@
+<div class="checkin-container">
+  <div class="checkin-card" [class.success]="status() === 'success'" [class.error]="status() === 'error'">
+
+    @if (status() === 'loading') {
+      <div class="icon">⏳</div>
+      <h2>Check-in en cours...</h2>
+      <p>Place {{ spaceLabel() }}</p>
+    }
+
+    @if (status() === 'success') {
+      <div class="icon">✅</div>
+      <h2>Check-in réussi !</h2>
+      <p class="space-label">Place {{ reservation()?.parkingSpaceLabel }}</p>
+      <div class="details">
+        <p>Réservé par : <strong>{{ reservation()?.userFullName }}</strong></p>
+        <p>Du {{ reservation()?.startDate }} au {{ reservation()?.endDate }}</p>
+        <p>Statut : <strong>{{ reservation()?.status }}</strong></p>
+      </div>
+    }
+
+    @if (status() === 'error') {
+      <div class="icon">❌</div>
+      <h2>Check-in impossible</h2>
+      <p class="error-msg">{{ message() }}</p>
+    }
+
+    <a href="/parking" class="back-link">← Retour au parking</a>
+  </div>
+</div>

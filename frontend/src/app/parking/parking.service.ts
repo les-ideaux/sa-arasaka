@@ -48,26 +48,15 @@ export class ParkingService {
     return this.http.get<ParkingPlace[]>(`${this.apiUrl}/reservations/available-spaces`, { params });
   }
 
-  createReservation(request: ReservationRequest, userId: number): Observable<ReservationResponse> {
-    return this.http.post<ReservationResponse>(
-      `${this.apiUrl}/reservations`,
-      request,
-      { headers: { 'X-User-Id': userId.toString() } }
-    );
+  createReservation(request: ReservationRequest): Observable<ReservationResponse> {
+    return this.http.post<ReservationResponse>(`${this.apiUrl}/reservations`, request);
   }
 
-  getMyReservations(userId: number): Observable<ReservationResponse[]> {
-    return this.http.get<ReservationResponse[]>(
-      `${this.apiUrl}/reservations/my`,
-      { headers: { 'X-User-Id': userId.toString() } }
-    );
+  getMyReservations(): Observable<ReservationResponse[]> {
+    return this.http.get<ReservationResponse[]>(`${this.apiUrl}/reservations/my`);
   }
 
-  cancelReservation(reservationId: number, userId: number): Observable<ReservationResponse> {
-    return this.http.post<ReservationResponse>(
-      `${this.apiUrl}/reservations/${reservationId}/cancel`,
-      {},
-      { headers: { 'X-User-Id': userId.toString() } }
-    );
+  cancelReservation(reservationId: number): Observable<ReservationResponse> {
+    return this.http.post<ReservationResponse>(`${this.apiUrl}/reservations/${reservationId}/cancel`, {});
   }
 }

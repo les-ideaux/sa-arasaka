@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ParkingService, ParkingPlace, ReservationResponse } from './parking.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-parking',
@@ -12,6 +13,7 @@ import { ParkingService, ParkingPlace, ReservationResponse } from './parking.ser
 export class Parking implements OnInit {
 
   private parkingService = inject(ParkingService);
+  private authService = inject(AuthService);
 
   parkingPlaces: ParkingPlace[][] = [];
   availableSpaceIds = new Set<number>();
@@ -29,9 +31,6 @@ export class Parking implements OnInit {
 
   myReservations: ReservationResponse[] = [];
   readonly today = new Date();
-
-  // TODO: remplacer par l'ID extrait du JWT
-  readonly TEMP_USER_ID = 1;
 
   ngOnInit() {
     this.initDates();
@@ -62,7 +61,7 @@ export class Parking implements OnInit {
   }
 
   loadMyReservations() {
-    this.parkingService.getMyReservations(this.TEMP_USER_ID).subscribe({
+    this.parkingService.getMyReservations().subscribe({
       next: (res) => this.myReservations = res,
       error: () => {}
     });
@@ -107,7 +106,7 @@ export class Parking implements OnInit {
       endDate: this.endDate,
       parkingSpaceId: this.selectedPlace.id,
       needsElectricCharging: this.needsElectric
-    }, this.TEMP_USER_ID).subscribe({
+    }).subscribe({
       next: (res) => {
         this.successMessage = `✅ Réservation confirmée ! Place ${res.parkingSpaceLabel} du ${res.startDate} au ${res.endDate}`;
         this.selectedPlace = null;
@@ -125,7 +124,7 @@ export class Parking implements OnInit {
   }
 
   cancelReservation(reservationId: number) {
-    this.parkingService.cancelReservation(reservationId, this.TEMP_USER_ID).subscribe({
+    this.parkingService.cancelReservation(reservationId).subscribe({
       next: () => {
         this.successMessage = 'Réservation annulée';
         this.loadMyReservations();
@@ -158,8 +157,10 @@ export class Parking implements OnInit {
 
   get maxEndDate(): string {
     if (!this.startDate) return '';
+    const role = this.authService.getRole();
+    const maxDays = role === 'MANAGER' ? 29 : 4;
     const max = new Date(this.startDate);
-    max.setDate(max.getDate() + 4);
+    max.setDate(max.getDate() + maxDays);
     return this.formatDate(max);
   }
 

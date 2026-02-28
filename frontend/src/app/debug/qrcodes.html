@@ -1,0 +1,30 @@
+<div class="qrcodes-page">
+  <div class="header">
+    <h1>🅿️ QR Codes des places de parking</h1>
+    <p>Imprimez et collez chaque QR code sur la place correspondante</p>
+    <button (click)="print()" class="print-btn">🖨️ Imprimer</button>
+  </div>
+
+  @for (row of rows; track row) {
+    <div class="row-section">
+      <h2>
+        Rangée {{ row }}
+        @if (row === 'A' || row === 'F') {
+          <span class="electric-badge">⚡ Bornes électriques</span>
+        }
+      </h2>
+      <div class="spots-grid">
+        @for (spot of spotsForRow(row); track spot.label) {
+          <div class="spot-card" [class.electric]="spot.hasCharger">
+            <div class="spot-label">
+              {{ spot.label }}
+              @if (spot.hasCharger) { ⚡ }
+            </div>
+            <canvas #qrCanvas></canvas>
+            <div class="spot-url">/checkin/{{ spot.label }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

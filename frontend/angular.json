@@ -33,6 +33,7 @@
             "styles": [
               "src/styles.scss"
             ],
+            "allowedCommonJsDependencies": ["qrcode"],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "ssr": {

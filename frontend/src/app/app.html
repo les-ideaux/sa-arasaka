@@ -1,2 +1,11 @@
-<h1>{{ title() }}</h1>
-<app-parking></app-parking>
+@if (authService.isAuthenticated()) {
+  <nav class="navbar">
+    <span class="navbar-brand">🅿️ Parking Arasaka</span>
+    <div class="navbar-user">
+      <span>{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
+      <span class="role-badge">{{ authService.currentUser()?.role }}</span>
+      <button (click)="authService.logout()" class="logout-btn">Déconnexion</button>
+    </div>
+  </nav>
+}
+<router-outlet />

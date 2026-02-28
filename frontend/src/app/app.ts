@@ -1,15 +1,15 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {Parking} from './parking/parking';
+import { CommonModule } from '@angular/common';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
-  imports: [
-    Parking
-  ],
+  imports: [RouterOutlet, CommonModule],
   styleUrl: './app.scss'
 })
 export class App {
+  protected authService = inject(AuthService);
   protected readonly title = signal('Parking');
 }

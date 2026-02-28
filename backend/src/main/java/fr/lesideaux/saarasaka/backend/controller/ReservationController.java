@@ -6,6 +6,8 @@ import fr.lesideaux.saarasaka.backend.dto.ReservationRequest;
 import fr.lesideaux.saarasaka.backend.dto.ReservationResponse;
 import fr.lesideaux.saarasaka.backend.service.ReservationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,11 +23,9 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createReservation(
-            @RequestBody ReservationRequest request,
-            @RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<?> createReservation(@RequestBody ReservationRequest request) {
         try {
-            return ResponseEntity.ok(reservationService.createReservation(request, userId));
+            return ResponseEntity.ok(reservationService.createReservation(request, getCurrentUserId()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IllegalStateException e) {
@@ -34,11 +34,9 @@ public class ReservationController {
     }
 
     @PostMapping("/{id}/checkin")
-    public ResponseEntity<?> checkIn(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<?> checkIn(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(reservationService.checkIn(id, userId));
+            return ResponseEntity.ok(reservationService.checkIn(id, getCurrentUserId()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IllegalStateException e) {
@@ -49,11 +47,9 @@ public class ReservationController {
     }
 
     @PostMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelReservation(
-            @PathVariable Long id,
-            @RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<?> cancelReservation(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(reservationService.cancelReservation(id, userId));
+            return ResponseEntity.ok(reservationService.cancelReservation(id, getCurrentUserId()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (SecurityException e) {
@@ -62,8 +58,8 @@ public class ReservationController {
     }
 
     @GetMapping("/my")
-    public List<ReservationResponse> getMyReservations(@RequestHeader("X-User-Id") Long userId) {
-        return reservationService.getUserReservations(userId);
+    public List<ReservationResponse> getMyReservations() {
+        return reservationService.getUserReservations(getCurrentUserId());
     }
 
     @GetMapping
@@ -76,5 +72,23 @@ public class ReservationController {
         return reservationService.getAvailableSpaces(
                 request.startDate(), request.endDate(), request.needsElectricCharging()
         );
+    }
+
+    @PostMapping("/checkin-by-space/{spaceLabel}")
+    public ResponseEntity<?> checkInBySpaceLabel(@PathVariable String spaceLabel) {
+        try {
+            return ResponseEntity.ok(reservationService.checkInBySpaceLabel(spaceLabel, getCurrentUserId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
+        }
+    }
+
+    private Long getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (Long) auth.getPrincipal();
     }
 }

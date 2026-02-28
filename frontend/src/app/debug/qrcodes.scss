@@ -1,0 +1,90 @@
+.qrcodes-page {
+  padding: 2rem;
+  font-family: sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  p { color: #666; margin-bottom: 1rem; }
+}
+
+.print-btn {
+  background: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover { background: #357abd; }
+}
+
+.row-section {
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: #f0f2f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.electric-badge {
+  font-size: 0.85rem;
+  background: #fff3cd;
+  color: #856404;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  border: 1px solid #ffc107;
+}
+
+.spots-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.75rem;
+}
+
+.spot-card {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+  background: white;
+
+  &.electric {
+    border-color: #ffc107;
+    background: #fffdf0;
+  }
+
+  canvas {
+    display: block;
+    margin: 0.25rem auto;
+  }
+}
+
+.spot-label {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.spot-url {
+  font-size: 0.6rem;
+  color: #999;
+  word-break: break-all;
+}
+
+@media print {
+  .print-btn { display: none; }
+  .qrcodes-page { padding: 0; }
+  .row-section { page-break-inside: avoid; }
+}

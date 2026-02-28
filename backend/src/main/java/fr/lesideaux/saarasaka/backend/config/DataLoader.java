@@ -7,6 +7,7 @@ import fr.lesideaux.saarasaka.backend.data.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -31,22 +32,22 @@ public class DataLoader {
     }
 
     @Bean
-    CommandLineRunner loadUsers(UserRepository repository) {
+    CommandLineRunner loadUsers(UserRepository repository, PasswordEncoder encoder) {
         return args -> {
             if (repository.count() == 0) {
                 repository.save(new UserEntity(
                         "employee@company.com", "Alice", "Dupont",
-                        "password123",
+                        encoder.encode("password123"),
                         UserEntity.Role.EMPLOYEE
                 ));
                 repository.save(new UserEntity(
                         "manager@company.com", "Bob", "Martin",
-                        "password123",
+                        encoder.encode("password123"),
                         UserEntity.Role.MANAGER
                 ));
                 repository.save(new UserEntity(
                         "secretary@company.com", "Claire", "Bernard",
-                        "password123",
+                        encoder.encode("password123"),
                         UserEntity.Role.SECRETARY
                 ));
             }
